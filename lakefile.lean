@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package «lean4-example» {
+package «x1LeanDojo» {
   -- add package configuration options here
 }
 
