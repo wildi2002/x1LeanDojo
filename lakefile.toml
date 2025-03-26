@@ -1,5 +1,8 @@
 name = "x1LeanDojo"
 
+[dependencies]
+lean = "leanprover/lean4"
+
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
