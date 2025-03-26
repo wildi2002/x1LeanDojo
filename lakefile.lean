@@ -1,12 +1,11 @@
 import Lake
 open Lake DSL
 
+require "leanprover-community" / "mathlib"
+
 package «x1LeanDojo» {
   -- Hier können Build-Optionen definiert werden
 }
-
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "master"
 
 @[default_target]
 lean_lib «Lean4Example» {
