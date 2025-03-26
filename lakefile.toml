@@ -1,0 +1,8 @@
+[package]
+name = "x1LeanDojo"
+version = "0.1"
+lean_version = "leanprover/lean4:v4.17.0"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
