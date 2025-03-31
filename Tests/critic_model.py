@@ -18,8 +18,8 @@ chat_2 = [
     {"role": "assistant", "content": "x : ℕ\nh₀ : ↑x + 4 / 100 * ↑x = 598\n⊢ 100 * x = 100 * 575"}
 ]
 chat_3 = [
-    {"role": "user", "content": "Solve for a: \sqrt{4+\sqrt{16+16a}}+\sqrt{1+\sqrt{1+a}}=6"},
-    {"role": "assistant", "content": ""}
+    {"role": "user", "content": "Is this step correct?"},
+    {"role": "assistant", "content": "x^2 = 4 -> x \in {-2,2}"}
 ]
 chat_4 = [
     {"role": "user", "content": "Which state is closer to 'no goals'?"},
