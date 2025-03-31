@@ -28,6 +28,7 @@ chat_4 = [
 
 score1 = model.get_score(tokenizer, chat_1)
 score2 = model.get_score(tokenizer, chat_2)
+score3 = model.get_score(tokenizer, chat_3)
 print("score1: ", score1)
 print("score2: ", score2)
 print("score3: ", score3)
