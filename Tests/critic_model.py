@@ -23,7 +23,7 @@ chat_3 = [
 ]
 chat_4 = [
     {"role": "user", "content": "Which state is closer to 'no goals'?"},
-    {"role": "assistant", "content": "x : ℕ\nh₀ : ↑x + 4 / 100 * ↑x = 598\n⊢ 104 * x = 100 * 575"}
+    {"role": "assistant", "content": "x : ℕ\nh₀ : ↑x + 4 / 100 * ↑x = 598\n⊢ 104 * x = 100 * 598"}
 ]
 
 score1 = model.get_score(tokenizer, chat_1)
