@@ -17,8 +17,17 @@ chat_2 = [
     {"role": "user", "content": "Which state is closer to 'no goals'?"},
     {"role": "assistant", "content": "x : ℕ\nh₀ : ↑x + 4 / 100 * ↑x = 598\n⊢ 100 * x = 100 * 575"}
 ]
+chat_3 = [
+    {"role": "user", "content": "Solve for a: \sqrt{4+\sqrt{16+16a}}+\sqrt{1+\sqrt{1+a}}=6"},
+    {"role": "assistant", "content": ""}
+]
+chat_4 = [
+    {"role": "user", "content": "Which state is closer to 'no goals'?"},
+    {"role": "assistant", "content": "x : ℕ\nh₀ : ↑x + 4 / 100 * ↑x = 598\n⊢ 100 * x = 100 * 575"}
+]
 
 score1 = model.get_score(tokenizer, chat_1)
 score2 = model.get_score(tokenizer, chat_2)
 print("score1: ", score1)
 print("score2: ", score2)
+print("score3: ", score3)
