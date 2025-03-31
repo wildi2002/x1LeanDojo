@@ -13,11 +13,13 @@ def format_input(theorem_name, proof_before, state):
 def generate_proof_step(theorem_name, proof_before, state, max_length=100):
     input_text = format_input(theorem_name, proof_before, state)
     
-    # Tokenize input
-    input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to(device)
-    
+    # Tokenize input with attention mask
+    inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
+    input_ids = inputs["input_ids"].to(device)
+    attention_mask = inputs["attention_mask"].to(device)  # Fix: Add attention mask
+
     # Generate output
-    output_ids = model.generate(input_ids, max_length=max_length)
+    output_ids = model.generate(input_ids, attention_mask=attention_mask, max_length=max_length)
     
     # Decode response
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
