@@ -3,7 +3,7 @@ from transformers import AutoModel, AutoTokenizer
 
 model = AutoModel.from_pretrained(
     "internlm/internlm2_5-step-prover-critic", 
-    device_map="cuda", 
+    device_map="cuda" if torch.cuda.is_available() else "cpu", 
     torch_dtype=torch.float16, 
     trust_remote_code=True,
 )
