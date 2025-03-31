@@ -1,0 +1,4 @@
+einops
+accelerate
+sentencepiece
+fastparquet

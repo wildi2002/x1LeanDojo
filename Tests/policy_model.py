@@ -19,7 +19,7 @@ def generate_proof_step(theorem_name, proof_before, state, max_length=100):
     attention_mask = inputs["attention_mask"].to(device)  # Fix: Add attention mask
 
     # Generate output
-    output_ids = model.generate(input_ids, attention_mask=attention_mask, max_length=max_length)
+    output_ids = model.generate(input_ids, attention_mask=attention_mask)
     
     # Decode response
     return tokenizer.decode(output_ids[0], skip_special_tokens=True)
