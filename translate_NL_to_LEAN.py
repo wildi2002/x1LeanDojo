@@ -17,7 +17,7 @@ def run_eval(
 ):
     print('##################'+str(torch.cuda.is_available()))
     #os.environ["CUDA_VISIBLE_DEVICES"] = str(os.environ['RANK'])
-    print(os.environ.get("CUDA_VISIBLE_DEVICES", "Not set"))
+    print(os.environ.get("CUDA_VISIBLE_DEVICES", "N/A"))
 
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
     special_tokens_dict = dict()
@@ -32,10 +32,15 @@ def run_eval(
     if len(special_tokens_dict) > 0 and model_path.find('Qwen') == -1:
         tokenizer.add_special_tokens(special_tokens_dict)
     
-    print(f"RANK: {os.environ['SLURM_PROCID']} | NUM_REPLICAS: {os.environ['SLURM_NTASKS']} | DEVICE {os.environ['CUDA_VISIBLE_DEVICES']}")
+    rank = os.environ.get("SLURM_PROCID", "0")
+    num_replicas = os.environ.get("SLURM_NTASKS", "1")
+    cuda_visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "N/A")
+
+    print(f"RANK: {rank} | NUM_REPLICAS: {num_replicas} | DEVICE {cuda_visible_devices}")
     print(f"Question: {question}")
     print(f"TP: {tp_size}")
-    device = 'cuda:' + os.environ['SLURM_PROCID']
+
+    device = 'cuda:' + rank
   
     try:
         model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
