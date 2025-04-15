@@ -1,102 +1,82 @@
-import argparse
-import json
 import os
+import json
 import torch
-from tqdm import tqdm
 from vllm import LLM, SamplingParams
-import numpy as numpy
 from transformers import AutoTokenizer
 
-def run_eval(
-    problem,
-    model_path = "internlm/internlm2-math-base-7b",
-    model_id = "internlm/internlm2-math-base-7b",
-    max_new_token = 1000,
-    temperature = 0.01,
-    tp_size = 1,
-):
-    print('##################'+str(torch.cuda.is_available()))
-    #os.environ["CUDA_VISIBLE_DEVICES"] = str(os.environ['RANK'])
-    print(os.environ.get("CUDA_VISIBLE_DEVICES", "N/A"))
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
-    special_tokens_dict = dict()
-    if tokenizer.pad_token is None:
-        special_tokens_dict["pad_token"] = '<unk>'
-    if tokenizer.eos_token is None:
-        special_tokens_dict["eos_token"] = '</s>'
-    if tokenizer.bos_token is None:
-        special_tokens_dict["bos_token"] = '<s>'
-    if tokenizer.unk_token is None:
-        special_tokens_dict["unk_token"] = '<unk>'
-    if len(special_tokens_dict) > 0 and model_path.find('Qwen') == -1:
-        tokenizer.add_special_tokens(special_tokens_dict)
-    
-    rank = os.environ.get("SLURM_PROCID", "0")
-    num_replicas = os.environ.get("SLURM_NTASKS", "1")
-    cuda_visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "N/A")
+class Lean4Translator:
+    def __init__(
+        self,
+        model_path="internlm/internlm2-math-base-7b",
+        model_id="internlm/internlm2-math-base-7b",
+        max_new_token=1000,
+        temperature=0.01,
+        tp_size=1,
+    ):
+        print('CUDA available:', torch.cuda.is_available())
+        print("CUDA_VISIBLE_DEVICES:", os.environ.get("CUDA_VISIBLE_DEVICES", "N/A"))
 
-    print(f"RANK: {rank} | NUM_REPLICAS: {num_replicas} | DEVICE {cuda_visible_devices}")
-    print(f"Question: {problem}")
-    print(f"TP: {tp_size}")
+        self.model_id = model_id
+        self.tp_size = tp_size
+        self.max_new_token = max_new_token
+        self.temperature = temperature
 
-    device = 'cuda:' + rank
-  
-    try:
-        model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
-    except RecursionError:
-        model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
-    
-    sampling_params = SamplingParams(temperature=temperature, max_tokens=max_new_token, stop=['[UNUSED_TOKEN_146]', '[UNUSED_TOKEN_145]', 'by', 'sorry'])
+        # Setup tokenizer
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
+        special_tokens_dict = {}
+        if self.tokenizer.pad_token is None: special_tokens_dict["pad_token"] = '<unk>'
+        if self.tokenizer.eos_token is None: special_tokens_dict["eos_token"] = '</s>'
+        if self.tokenizer.bos_token is None: special_tokens_dict["bos_token"] = '<s>'
+        if self.tokenizer.unk_token is None: special_tokens_dict["unk_token"] = '<unk>'
+        if special_tokens_dict and 'Qwen' not in model_path:
+            self.tokenizer.add_special_tokens(special_tokens_dict)
 
-    def get_query(example):
-        if 'answer' in example and 'prove' not in example['problem'].split(' ') and 'Prove' not in example['problem'].split(' ') and example['answer'] != '' and len(example['answer']) <= 30:
-            return "[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n" + str(example['problem']) + "Show that it is " + str(example['answer']) + "[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
-        else:
-            return "[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n" + str(example['problem']) + "[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+        # Load model
+        try:
+            self.model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
+        except RecursionError:
+            self.model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
 
-    questions = [{ "problem": problem }]
-    prompts = [get_query(example) for example in questions]
-
-    prompt_id_map = {prompt: idx for idx, prompt in enumerate(prompts)}
-
-    outputs = model.generate(prompts, sampling_params)
-
-    for _, output in enumerate(outputs):
-        output_ids = output.outputs[0].token_ids
-        question = questions[prompt_id_map[output.prompt]]
-
-        output = model.get_tokenizer().decode(
-            output_ids,
-            spaces_between_special_tokens=False,
+        self.sampling_params = SamplingParams(
+            temperature=self.temperature,
+            max_tokens=self.max_new_token,
+            stop=['[UNUSED_TOKEN_146]', '[UNUSED_TOKEN_145]', 'by', 'sorry']
         )
 
-        for special_token in model.get_tokenizer().special_tokens_map.values():
+    def get_prompt(self, example):
+        if 'answer' in example and 'prove' not in example['problem'].split() and 'Prove' not in example['problem'].split() and example['answer'] and len(example['answer']) <= 30:
+            return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+        else:
+            return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+
+    def translate(self, problem):
+        print(f"\n>> Translating: {problem}")
+        question = {"problem": problem}
+        prompt = self.get_prompt(question)
+        outputs = self.model.generate([prompt], self.sampling_params)
+
+        output_ids = outputs[0].outputs[0].token_ids
+        output = self.model.get_tokenizer().decode(output_ids, spaces_between_special_tokens=False)
+
+        for special_token in self.model.get_tokenizer().special_tokens_map.values():
             if isinstance(special_token, list):
-                for special_tok in special_token:
-                    output = output.replace(special_tok, "")
+                for tok in special_token:
+                    output = output.replace(tok, "")
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
 
         question['output'] = output
-        question['generator'] = model_id
+        question['generator'] = self.model_id
+        return json.dumps(question, ensure_ascii=False, indent=2)
 
-        return json.dumps(question, ensure_ascii=False) + "\n"
 
+# Beispielnutzung
 if __name__ == "__main__":
-    print(run_eval(
-        "Show that the sum of two even numbers is always even."
-    ))
-    print(run_eval(
-        "Definition of an even number a: a = 2n where n is a natural number."
-    ))
-    print(run_eval(
-        "Addition of a + b = 2n + 2m"
-    ))
-    print(run_eval(
-        "Factoring: 2n + 2m = 2(n+m)"
-    ))
-    print(run_eval(
-        "a+b = 2(n+m) is even."
-    ))
+    translator = Lean4Translator()
+    print(translator.translate("Show that the sum of two even numbers is always even."))
+    print(translator.translate("Definition of an even number a: a = 2n where n is a natural number."))
+    print(translator.translate("Addition of a + b = 2n + 2m"))
+    print(translator.translate("Factoring: 2n + 2m = 2(n+m)"))
+    print(translator.translate("a + b = 2(n + m) is even."))
