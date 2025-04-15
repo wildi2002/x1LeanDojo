@@ -8,7 +8,7 @@ import numpy as numpy
 from transformers import AutoTokenizer
 
 def run_eval(
-    question,
+    problem,
     model_path = "internlm/internlm2-math-base-7b",
     model_id = "internlm/internlm2-math-base-7b",
     max_new_token = 1000,
@@ -55,7 +55,7 @@ def run_eval(
         else:
             return "[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n" + str(example['problem']) + "[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
 
-    questions = [question]
+    questions = [{ "problem": problem }]
     prompts = [get_query(example) for example in questions]
 
     prompt_id_map = {prompt: idx for idx, prompt in enumerate(prompts)}
