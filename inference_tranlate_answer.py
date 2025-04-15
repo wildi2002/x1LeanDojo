@@ -78,8 +78,10 @@ def run_eval(
         question['output'] = output
         question['generator'] = model_id
 
-        # Dump answers
-        os.makedirs(os.path.dirname(answer_file), exist_ok=True)
+        dir_name = os.path.dirname(answer_file)
+        if dir_name:  # Nur wenn ein Verzeichnis vorhanden ist
+            os.makedirs(dir_name, exist_ok=True)
+
         with open(os.path.expanduser(answer_file), "a") as fout:
             fout.write(json.dumps(question, ensure_ascii=False) + "\n")
 
