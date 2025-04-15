@@ -17,7 +17,7 @@ def run_eval(
 ):
     print('##################'+str(torch.cuda.is_available()))
     #os.environ["CUDA_VISIBLE_DEVICES"] = str(os.environ['RANK'])
-    print(os.environ["CUDA_VISIBLE_DEVICES"])
+    print(os.environ.get("CUDA_VISIBLE_DEVICES", "Not set"))
 
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
     special_tokens_dict = dict()
