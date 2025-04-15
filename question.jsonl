@@ -1,5 +1,5 @@
-{ "question": "Show that the sum of two even numbers is always even." }
-{ "question": "Definition of an even number a: a = 2n where n is a natural number." }
-{ "question": "Addition of a + b = 2n + 2m" }
-{ "question": "Factoring: 2n + 2m = 2(n+m)" }
-{ "question": "a+b = 2(n+m) is even." }
+{ "problem": "Show that the sum of two even numbers is always even." }
+{ "problem": "Definition of an even number a: a = 2n where n is a natural number." }
+{ "problem": "Addition of a + b = 2n + 2m" }
+{ "problem": "Factoring: 2n + 2m = 2(n+m)" }
+{ "problem": "a+b = 2(n+m) is even." }
