@@ -37,7 +37,7 @@ def run_eval(
     cuda_visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "N/A")
 
     print(f"RANK: {rank} | NUM_REPLICAS: {num_replicas} | DEVICE {cuda_visible_devices}")
-    print(f"Question: {question}")
+    print(f"Question: {problem}")
     print(f"TP: {tp_size}")
 
     device = 'cuda:' + rank
