@@ -85,6 +85,18 @@ def run_eval(
         return json.dumps(question, ensure_ascii=False) + "\n"
 
 if __name__ == "__main__":
-    run_eval(
+    print(run_eval(
         "Show that the sum of two even numbers is always even."
-    )
+    ))
+    print(run_eval(
+        "Definition of an even number a: a = 2n where n is a natural number."
+    ))
+    print(run_eval(
+        "Addition of a + b = 2n + 2m"
+    ))
+    print(run_eval(
+        "Factoring: 2n + 2m = 2(n+m)"
+    ))
+    print(run_eval(
+        "a+b = 2(n+m) is even."
+    ))
