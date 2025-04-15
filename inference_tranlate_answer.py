@@ -97,12 +97,14 @@ if __name__ == "__main__":
         "--question-file",
         type=str,
         default=None,
+        required=True,
         help="The name of the benchmark question set.",
     )
     parser.add_argument(
         "--answer-file",
         type=str,
         default=None,
+        required=True,
         help="The output answer file.",
     )
     parser.add_argument(
