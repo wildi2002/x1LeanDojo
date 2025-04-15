@@ -84,6 +84,7 @@ def run_eval(
             fout.write(json.dumps(question, ensure_ascii=False) + "\n")
 
 if __name__ == "__main__":
+    os.environ["TORCHDYNAMO_DISABLE"] = "1"
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model-path",
