@@ -45,21 +45,27 @@ class Lean4Translator:
         )
 
     def get_prompt(self, example):
-        print(">>> " + str(example['type']))
         if example['type'] == 1:
+            print(">> Translating: ")
             if 'answer' in example and 'prove' not in example['problem'].split() and 'Prove' not in example['problem'].split() and example['answer'] and len(example['answer']) <= 30:
-                return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+                prompt = f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
             else:
-                return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
-        elif example['problem'] == 2:
-            return f"Given a question and two answers, which one is better? \nQuestion:{example['problem']}\nAnswer 1:{example['cot1']}\nAnswer 2:{example['cot2']}"
+                prompt = f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+            print(prompt)
+            return prompt
+
+        elif example['type'] == 2:
+            print(">> Comparing: ")
+            prompt = f"Given a question and two answers, which one is better? \nQuestion:{example['problem']}\nAnswer 1:{example['cot1']}\nAnswer 2:{example['cot2']}"
+            print(prompt)
+            return prompt
+
         else:
             raise Exception("not valid prompt type")
     
 
 
     def translate(self, problem):
-        print(f"\n>> Translating: {problem}")
         question = {"type": 1, "problem": problem}
         prompt = self.get_prompt(question)
         outputs = self.model.generate([prompt], self.sampling_params)
@@ -74,12 +80,12 @@ class Lean4Translator:
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
+        print(">>> " + output)
         question['output'] = output
         question['generator'] = self.model_id
         return json.dumps(question, ensure_ascii=False, indent=2)
 
     def compare(self, problem, cot1, cot2):
-        print(f"\n>> Comparing: {problem}")
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
         prompt = self.get_prompt(question)
         outputs = self.model.generate([prompt], self.sampling_params)
@@ -94,7 +100,7 @@ class Lean4Translator:
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
-        print(output)
+        print(">>> " + output)
         question['output'] = output
         question['generator'] = self.model_id
         return output #json.dumps(question, ensure_ascii=False, indent=2)
@@ -111,10 +117,14 @@ if __name__ == "__main__":
         + translator.translate("a + b = 2(n + m) is even.")
     )
 
+    print("> " + cot1)
     cot2 = (
         translator.translate("Definition of an even number a: a = 2n where n is a natural number.") + "\n"
         + translator.translate("Addition of a + b = 2n + 2m") + "\n"
         + translator.translate("Factoring: 2n + 2m = 2(n+m)") + "\n"
         + translator.translate("a + b = 2(n + m) is even.")
     )
+
+    print("> " + cot2)
+    
     translator.compare(problem, cot1, cot2)
