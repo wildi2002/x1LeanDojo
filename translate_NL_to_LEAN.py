@@ -97,7 +97,7 @@ class Lean4Translator:
         print(output)
         question['output'] = output
         question['generator'] = self.model_id
-        return json.dumps(question, ensure_ascii=False, indent=2)
+        return output #json.dumps(question, ensure_ascii=False, indent=2)
 
 
 # Beispielnutzung
@@ -105,16 +105,16 @@ if __name__ == "__main__":
     translator = Lean4Translator()
     problem = "Show that the sum of two even numbers is always even."
     cot1 = (
-        translator.translate("Definition of an even number a: a = 2n where n is a natural number.")["output"] + "\n"
-        + translator.translate("Addition of a + b = 2n + 2m")["output"] + "\n"
-        + translator.translate("Factoring: 2n + 2m = 2(n+m)")["output"] + "\n"
-        + translator.translate("a + b = 2(n + m) is even.")["output"]
+        translator.translate("Definition of an even number a: a = 2n where n is a natural number.") + "\n"
+        + translator.translate("Addition of a + b = 2n + 2m") + "\n"
+        + translator.translate("Factoring: 2n + 2m = 2(n+m)") + "\n"
+        + translator.translate("a + b = 2(n + m) is even.")
     )
 
     cot2 = (
-        translator.translate("Definition of an even number a: a = 2n where n is a natural number.")["output"] + "\n"
-        + translator.translate("Addition of a + b = 2n + 2m")["output"] + "\n"
-        + translator.translate("Factoring: 2n + 2m = 2(n+m)")["output"] + "\n"
-        + translator.translate("a + b = 2(n + m) is even.")["output"]
+        translator.translate("Definition of an even number a: a = 2n where n is a natural number.") + "\n"
+        + translator.translate("Addition of a + b = 2n + 2m") + "\n"
+        + translator.translate("Factoring: 2n + 2m = 2(n+m)") + "\n"
+        + translator.translate("a + b = 2(n + m) is even.")
     )
     translator.compare(problem, cot1, cot2)
