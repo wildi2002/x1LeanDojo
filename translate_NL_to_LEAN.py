@@ -55,9 +55,9 @@ class Lean4Translator:
             return prompt
 
         elif example['type'] == 2:
-            #print(">> Comparing: ")
+            print(">> Comparing: ")
             prompt = f"Given a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}"
-            #print(prompt)
+            print(prompt)
             return prompt
 
         else:
