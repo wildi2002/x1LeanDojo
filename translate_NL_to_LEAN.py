@@ -5,7 +5,7 @@ from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
 
 
-class Lean4Translator:
+class Lean4Verification:
     def __init__(
         self,
         model_path="internlm/internlm2-math-base-7b",
@@ -43,6 +43,23 @@ class Lean4Translator:
             max_tokens=self.max_new_token,
             stop=['[UNUSED_TOKEN_146]', '[UNUSED_TOKEN_145]', 'by', 'sorry']
         )
+    
+    def run_model(self, question):
+        prompt = self.get_prompt(question)
+        outputs = self.model.generate([prompt], self.sampling_params)
+
+        output_ids = outputs[0].outputs[0].token_ids
+        output = self.model.get_tokenizer().decode(output_ids, spaces_between_special_tokens=False)
+
+        for special_token in self.model.get_tokenizer().special_tokens_map.values():
+            if isinstance(special_token, list):
+                for tok in special_token:
+                    output = output.replace(tok, "")
+            else:
+                output = output.replace(special_token, "")
+        output = output.strip()
+        #print(">>> " + output)
+        return output
 
     def get_prompt(self, example):
         if example['type'] == 1:
@@ -53,75 +70,27 @@ class Lean4Translator:
                 prompt = f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
             #print(prompt)
             return prompt
-
         elif example['type'] == 2:
             #print(">> Comparing: ")
             prompt = f"[UNUSED_TOKEN_146]user\nGiven a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
             #print(prompt)
             return prompt
-
         else:
             raise Exception("not valid prompt type")
     
-
-
     def translate(self, problem):
         question = {"type": 1, "problem": problem}
-        prompt = self.get_prompt(question)
-        outputs = self.model.generate([prompt], self.sampling_params)
-
-        output_ids = outputs[0].outputs[0].token_ids
-        output = self.model.get_tokenizer().decode(output_ids, spaces_between_special_tokens=False)
-
-        for special_token in self.model.get_tokenizer().special_tokens_map.values():
-            if isinstance(special_token, list):
-                for tok in special_token:
-                    output = output.replace(tok, "")
-            else:
-                output = output.replace(special_token, "")
-        output = output.strip()
-        #print(">>> " + output)
-        return output
+        return self.run_model(question)
 
     def compare(self, problem, cot1, cot2):
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
-        prompt = self.get_prompt(question)
-        outputs = self.model.generate([prompt], self.sampling_params)
-
-        output_ids = outputs[0].outputs[0].token_ids
-        output = self.model.get_tokenizer().decode(output_ids, spaces_between_special_tokens=False)
-
-        for special_token in self.model.get_tokenizer().special_tokens_map.values():
-            if isinstance(special_token, list):
-                for tok in special_token:
-                    output = output.replace(tok, "")
-            else:
-                output = output.replace(special_token, "")
-        output = output.strip()
-        #print(">>> " + output)
-        return output
+        return self.run_model(question)
 
 
 # Beispielnutzung
 if __name__ == "__main__":
-    translator = Lean4Translator()
-    problem = "Show that the sum of two even numbers is always even."
-    cot1 = ("```lean\n" +
-        translator.translate("An even number can be written as 2 times a natural number.") + "\n"
-        + translator.translate("Let a = 2n and b = 2m for some natural numbers n and m.") + "\n"
-        + translator.translate("Then a + b = 2n + 2m") + "\n"
-        + translator.translate("Factor the expression: 2n + 2m = 2(n + m)") + "\n"
-        + translator.translate("Since n + m is a natural number, a + b is divisible by 2, hence even.") + "\n```"
-    )
+    lean = Lean4Verification()
 
-    cot2 = ("```lean\n" +
-        translator.translate("Even numbers are defined as numbers that are divisible by 2.") + "\n"
-        + translator.translate("Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l.") + "\n"
-        + translator.translate("Then, a + b = 2k + 2l") + "\n"
-        + translator.translate("This simplifies to a + b = 2(k + l)") + "\n"
-        + translator.translate("Therefore, a + b is divisible by 2, so it is even.") + "\n```"
-    )
-    
-    print(translator.compare(problem, cot1, cot2))
-    print(translator.compare(problem, ("""An even number can be written as 2 times a natural number. Let a = 2n and b = 2m for some natural numbers n and m. Then a + b = 2n + 2m. Factor the expression: 2n + 2m = 2(n + m). Since n + m is a natural number, a + b is divisible by 2, hence even."""), 
+    problem = "Show that the sum of two even numbers is always even."
+    print(lean.compare(problem, ("""An even number can be written as 2 times a natural number. Let a = 2n and b = 2m for some natural numbers n and m. Then a + b = 2n + 2m. Factor the expression: 2n + 2m = 2(n + m). Since n + m is a natural number, a + b is divisible by 2, hence even."""), 
                              ("""Even numbers are defined as numbers that are divisible by 2. Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l. Then, a + b = 2k + 2l. This simplifies to a + b = 2(k + l). Therefore, a + b is divisible by 2, so it is even.""")))
