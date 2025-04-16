@@ -122,16 +122,6 @@ if __name__ == "__main__":
         + translator.translate("Therefore, a + b is divisible by 2, so it is even.")
     )
     
-    print(translator.compare(problem, ("""An even number can be written as 2 times a natural number.
-        Let a = 2n and b = 2m for some natural numbers n and m.
-        Then a + b = 2n + 2m
-        Factor the expression: 2n + 2m = 2(n + m)
-        Since n + m is a natural number, a + b is divisible by 2, hence even.
-        """), ("""Even numbers are defined as numbers that are divisible by 2.
-        Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l.
-        Then, a + b = 2k + 2l
-        This simplifies to a + b = 2(k + l)
-        Therefore, a + b is divisible by 2, so it is even.
-        """)))
-
     print(translator.compare(problem, cot1, cot2))
+    print(translator.compare(problem, ("""An even number can be written as 2 times a natural number. Let a = 2n and b = 2m for some natural numbers n and m. Then a + b = 2n + 2m. Factor the expression: 2n + 2m = 2(n + m). Since n + m is a natural number, a + b is divisible by 2, hence even."""), 
+                             ("""Even numbers are defined as numbers that are divisible by 2. Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l. Then, a + b = 2k + 2l. This simplifies to a + b = 2(k + l). Therefore, a + b is divisible by 2, so it is even.""")))
