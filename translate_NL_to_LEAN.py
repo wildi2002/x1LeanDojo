@@ -56,7 +56,7 @@ class Lean4Translator:
 
         elif example['type'] == 2:
             print(">> Comparing: ")
-            prompt = f"Given a question and two answers, which one is better? \nQuestion:{example['problem']}\nAnswer 1:{example['cot1']}\nAnswer 2:{example['cot2']}"
+            prompt = f"Given a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}"
             print(prompt)
             return prompt
 
@@ -81,9 +81,7 @@ class Lean4Translator:
                 output = output.replace(special_token, "")
         output = output.strip()
         print(">>> " + output)
-        question['output'] = output
-        question['generator'] = self.model_id
-        return json.dumps(question, ensure_ascii=False, indent=2)
+        return output
 
     def compare(self, problem, cot1, cot2):
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
@@ -101,9 +99,7 @@ class Lean4Translator:
                 output = output.replace(special_token, "")
         output = output.strip()
         print(">>> " + output)
-        question['output'] = output
-        question['generator'] = self.model_id
-        return output #json.dumps(question, ensure_ascii=False, indent=2)
+        return output
 
 
 # Beispielnutzung
