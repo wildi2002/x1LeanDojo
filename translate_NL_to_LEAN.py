@@ -106,20 +106,20 @@ class Lean4Translator:
 if __name__ == "__main__":
     translator = Lean4Translator()
     problem = "Show that the sum of two even numbers is always even."
-    cot1 = (
+    cot1 = ("```lean\n" +
         translator.translate("An even number can be written as 2 times a natural number.") + "\n"
         + translator.translate("Let a = 2n and b = 2m for some natural numbers n and m.") + "\n"
         + translator.translate("Then a + b = 2n + 2m") + "\n"
         + translator.translate("Factor the expression: 2n + 2m = 2(n + m)") + "\n"
-        + translator.translate("Since n + m is a natural number, a + b is divisible by 2, hence even.")
+        + translator.translate("Since n + m is a natural number, a + b is divisible by 2, hence even.") + "\n```"
     )
 
-    cot2 = (
+    cot2 = ("```lean\n" +
         translator.translate("Even numbers are defined as numbers that are divisible by 2.") + "\n"
         + translator.translate("Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l.") + "\n"
         + translator.translate("Then, a + b = 2k + 2l") + "\n"
         + translator.translate("This simplifies to a + b = 2(k + l)") + "\n"
-        + translator.translate("Therefore, a + b is divisible by 2, so it is even.")
+        + translator.translate("Therefore, a + b is divisible by 2, so it is even.") + "\n```"
     )
     
     print(translator.compare(problem, cot1, cot2))
