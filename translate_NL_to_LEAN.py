@@ -45,6 +45,7 @@ class Lean4Translator:
         )
 
     def get_prompt(self, example):
+        print(">>> " + str(example['type']))
         if example['type'] == 1:
             if 'answer' in example and 'prove' not in example['problem'].split() and 'Prove' not in example['problem'].split() and example['answer'] and len(example['answer']) <= 30:
                 return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
@@ -73,13 +74,12 @@ class Lean4Translator:
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
-        print(output)
         question['output'] = output
         question['generator'] = self.model_id
         return json.dumps(question, ensure_ascii=False, indent=2)
 
     def compare(self, problem, cot1, cot2):
-        print(f"\n>> Comparing: {problem} - {cot1} WITH {cot2}")
+        print(f"\n>> Comparing: {problem}")
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
         prompt = self.get_prompt(question)
         outputs = self.model.generate([prompt], self.sampling_params)
