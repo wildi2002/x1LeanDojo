@@ -45,14 +45,21 @@ class Lean4Translator:
         )
 
     def get_prompt(self, example):
-        if 'answer' in example and 'prove' not in example['problem'].split() and 'Prove' not in example['problem'].split() and example['answer'] and len(example['answer']) <= 30:
-            return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+        if example['type'] == 1:
+            if 'answer' in example and 'prove' not in example['problem'].split() and 'Prove' not in example['problem'].split() and example['answer'] and len(example['answer']) <= 30:
+                return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+            else:
+                return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+        elif example['problem'] == 2:
+            return f"Given a question and two answers, which one is better? \nQuestion:{example['problem']}\nAnswer 1:{example['cot1']}\nAnswer 2:{example['cot2']}"
         else:
-            return f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
+            raise Exception("not valid prompt type")
+    
+
 
     def translate(self, problem):
         print(f"\n>> Translating: {problem}")
-        question = {"problem": problem}
+        question = {"type": 1, "problem": problem}
         prompt = self.get_prompt(question)
         outputs = self.model.generate([prompt], self.sampling_params)
 
@@ -66,7 +73,28 @@ class Lean4Translator:
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
+        print(output)
+        question['output'] = output
+        question['generator'] = self.model_id
+        return json.dumps(question, ensure_ascii=False, indent=2)
 
+    def compare(self, problem, cot1, cot2):
+        print(f"\n>> Comparing: {problem} - {cot1} WITH {cot2}")
+        question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
+        prompt = self.get_prompt(question)
+        outputs = self.model.generate([prompt], self.sampling_params)
+
+        output_ids = outputs[0].outputs[0].token_ids
+        output = self.model.get_tokenizer().decode(output_ids, spaces_between_special_tokens=False)
+
+        for special_token in self.model.get_tokenizer().special_tokens_map.values():
+            if isinstance(special_token, list):
+                for tok in special_token:
+                    output = output.replace(tok, "")
+            else:
+                output = output.replace(special_token, "")
+        output = output.strip()
+        print(output)
         question['output'] = output
         question['generator'] = self.model_id
         return json.dumps(question, ensure_ascii=False, indent=2)
@@ -75,8 +103,18 @@ class Lean4Translator:
 # Beispielnutzung
 if __name__ == "__main__":
     translator = Lean4Translator()
-    print(translator.translate("Show that the sum of two even numbers is always even."))
-    print(translator.translate("Definition of an even number a: a = 2n where n is a natural number."))
-    print(translator.translate("Addition of a + b = 2n + 2m"))
-    print(translator.translate("Factoring: 2n + 2m = 2(n+m)"))
-    print(translator.translate("a + b = 2(n + m) is even."))
+    problem = "Show that the sum of two even numbers is always even."
+    cot1 = (
+        translator.translate("Definition of an even number a: a = 2n where n is a natural number.")["output"] + "\n"
+        + translator.translate("Addition of a + b = 2n + 2m")["output"] + "\n"
+        + translator.translate("Factoring: 2n + 2m = 2(n+m)")["output"] + "\n"
+        + translator.translate("a + b = 2(n + m) is even.")["output"]
+    )
+
+    cot2 = (
+        translator.translate("Definition of an even number a: a = 2n where n is a natural number.")["output"] + "\n"
+        + translator.translate("Addition of a + b = 2n + 2m")["output"] + "\n"
+        + translator.translate("Factoring: 2n + 2m = 2(n+m)")["output"] + "\n"
+        + translator.translate("a + b = 2(n + m) is even.")["output"]
+    )
+    translator.compare(problem, cot1, cot2)
