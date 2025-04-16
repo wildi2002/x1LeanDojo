@@ -46,18 +46,18 @@ class Lean4Translator:
 
     def get_prompt(self, example):
         if example['type'] == 1:
-            print(">> Translating: ")
+            #print(">> Translating: ")
             if 'answer' in example and 'prove' not in example['problem'].split() and 'Prove' not in example['problem'].split() and example['answer'] and len(example['answer']) <= 30:
                 prompt = f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']} Show that it is {example['answer']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
             else:
                 prompt = f"[UNUSED_TOKEN_146]user\nConvert following problem into LEAN 4:\n{example['problem']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\nHere is the formal statement in LEAN 4:\n```lean\ntheorem"
-            print(prompt)
+            #print(prompt)
             return prompt
 
         elif example['type'] == 2:
-            print(">> Comparing: ")
+            #print(">> Comparing: ")
             prompt = f"Given a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}"
-            print(prompt)
+            #print(prompt)
             return prompt
 
         else:
@@ -80,7 +80,7 @@ class Lean4Translator:
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
-        print(">>> " + output)
+        #print(">>> " + output)
         return output
 
     def compare(self, problem, cot1, cot2):
@@ -98,7 +98,7 @@ class Lean4Translator:
             else:
                 output = output.replace(special_token, "")
         output = output.strip()
-        print(">>> " + output)
+        #print(">>> " + output)
         return output
 
 
@@ -107,20 +107,31 @@ if __name__ == "__main__":
     translator = Lean4Translator()
     problem = "Show that the sum of two even numbers is always even."
     cot1 = (
-        translator.translate("Definition of an even number a: a = 2n where n is a natural number.") + "\n"
-        + translator.translate("Addition of a + b = 2n + 2m") + "\n"
-        + translator.translate("Factoring: 2n + 2m = 2(n+m)") + "\n"
-        + translator.translate("a + b = 2(n + m) is even.")
+        translator.translate("An even number can be written as 2 times a natural number.") + "\n"
+        + translator.translate("Let a = 2n and b = 2m for some natural numbers n and m.") + "\n"
+        + translator.translate("Then a + b = 2n + 2m") + "\n"
+        + translator.translate("Factor the expression: 2n + 2m = 2(n + m)") + "\n"
+        + translator.translate("Since n + m is a natural number, a + b is divisible by 2, hence even.")
     )
 
-    print("> " + cot1)
     cot2 = (
-        translator.translate("Definition of an even number a: a = 2n where n is a natural number.") + "\n"
-        + translator.translate("Addition of a + b = 2n + 2m") + "\n"
-        + translator.translate("Factoring: 2n + 2m = 2(n+m)") + "\n"
-        + translator.translate("a + b = 2(n + m) is even.")
+        translator.translate("Even numbers are defined as numbers that are divisible by 2.") + "\n"
+        + translator.translate("Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l.") + "\n"
+        + translator.translate("Then, a + b = 2k + 2l") + "\n"
+        + translator.translate("This simplifies to a + b = 2(k + l)") + "\n"
+        + translator.translate("Therefore, a + b is divisible by 2, so it is even.")
     )
-
-    print("> " + cot2)
     
-    translator.compare(problem, cot1, cot2)
+    print(translator.compare(problem, ("""An even number can be written as 2 times a natural number.
+        Let a = 2n and b = 2m for some natural numbers n and m.
+        Then a + b = 2n + 2m
+        Factor the expression: 2n + 2m = 2(n + m)
+        Since n + m is a natural number, a + b is divisible by 2, hence even.
+        """), ("""Even numbers are defined as numbers that are divisible by 2.
+        Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l.
+        Then, a + b = 2k + 2l
+        This simplifies to a + b = 2(k + l)
+        Therefore, a + b is divisible by 2, so it is even.
+        """)))
+
+    print(translator.compare(problem, cot1, cot2))
