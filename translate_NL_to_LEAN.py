@@ -74,6 +74,15 @@ class Lean4Verification:
             #print(">> Comparing: ")
             prompt = f"[UNUSED_TOKEN_146]user\nGiven a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
             #print(prompt)
+            # if "Answer 1 is better" in prompt:
+            #     return 1
+            # elif "Answer 2 is better" in prompt:
+            #     return 2
+            # elif "Answer 2 is better" in prompt:
+            #     return 0
+            # else:
+            #     raise Exception("Neither answer one nor answer 2 is better.")
+            
             return prompt
         else:
             raise Exception("not valid prompt type")
@@ -94,3 +103,20 @@ if __name__ == "__main__":
     problem = "Show that the sum of two even numbers is always even."
     print(lean.compare(problem, ("""An even number can be written as 2 times a natural number. Let a = 2n and b = 2m for some natural numbers n and m. Then a + b = 2n + 2m. Factor the expression: 2n + 2m = 2(n + m). Since n + m is a natural number, a + b is divisible by 2, hence even."""), 
                              ("""Even numbers are defined as numbers that are divisible by 2. Assume a and b are even, so there exist integers k and l such that a = 2k and b = 2l. Then, a + b = 2k + 2l. This simplifies to a + b = 2(k + l). Therefore, a + b is divisible by 2, so it is even.""")))
+    
+    problem = "Prove that the product of two odd numbers is always odd."
+    print(lean.compare(problem,
+        ("""Let a = 2n + 1 and b = 2m + 1 be two odd numbers. Then a * b = (2n + 1)(2m + 1) = 4nm + 2n + 2m + 1 = 2(2nm + n + m) + 1, which is of the form 2k + 1, so it is odd."""),
+        ("""Odd numbers can be written as 2k + 1. The product is (2k + 1)(2l + 1) = 4kl + 2k + 2l + 1 = 2(2kl + k + l) + 1. Since this is one more than an even number, the product is odd.""")))
+
+    problem = "Prove that the square of an even number is even."
+    print(lean.compare(problem,
+        ("""Let a be an even number, so a = 2n for some integer n. Then a² = (2n)² = 4n² = 2(2n²), which is divisible by 2, hence even."""),
+        ("""An even number can be expressed as 2k. Squaring gives (2k)² = 4k² = 2(2k²), which is clearly even since it's a multiple of 2.""")))
+
+    problem = "Show that the sum of an odd number of consecutive integers is divisible by the number of terms."
+    print(lean.compare(problem,
+        ("""Let the sequence be centered at 0: -n, ..., 0, ..., n. The number of terms is 2n + 1, which is odd. Their sum is zero due to symmetry, and zero is divisible by any integer, including 2n + 1."""),
+        ("""Let the numbers be a, a+1, ..., a+2n. The number of terms is 2n + 1. The sum is (2n + 1)(a + n), and since (2n + 1) divides the product, it divides the sum.""")))
+
+
