@@ -85,7 +85,7 @@ class Lean4Verification:
             return prompt
         elif example['type'] == 3:
             #print(">> Comparing: ")
-            prompt = f"Given a question and two answers, give me a number between 0 and 1, where 0 means Answer 1 is to 100% correct and 1 means Answer 2 is to 100% correct.? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
+            prompt = f"Given a question and two answers, return a number between 0 and 1: 0 means Answer 1 is fully correct, 1 means Answer 2 is fully correct. \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
 
             return prompt
         else:
