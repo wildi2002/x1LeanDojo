@@ -82,6 +82,7 @@ class Lean4Verification:
             #     return 0
             # else:
             #     raise Exception("Neither answer one nor answer 2 is better.")
+            return prompt
         elif example['type'] == 3:
             #print(">> Comparing: ")
             prompt = f"Given a question and two answers, give me a number between 0 and 1, where 0 means Answer 1 is to 100% correct and 1 means Answer 2 is to 100% correct.? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
@@ -95,7 +96,7 @@ class Lean4Verification:
         return self.run_model(question)
 
     def compare(self, problem, cot1, cot2):
-        question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
+        question = {"type": 3, "problem": problem, "cot1": cot1, "cot2": cot2}
         return self.run_model(question)
 
 
