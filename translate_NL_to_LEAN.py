@@ -92,14 +92,14 @@ class Lean4Verification:
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
         answer = self.run_model(question)
         print(answer)
-        if "Answer 1 is better" in answer and "Answer 2 is better" in answer:
+        if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
             return 0.5
-        elif "Answer 1 is better" in answer:
-            return 0
-        elif "Answer 2 is better" in answer:
-            return 1
         elif "equal" in answer:
             return 0.5
+        elif "Answer 1 is better" in answer or "Answer 1 is correct" in answer:
+            return 0
+        elif "Answer 2 is better" in answer or "Answer 2 is correct" in answer:
+            return 1
         else:
             raise Exception("Neither answer one nor answer 2 is better.")
 
