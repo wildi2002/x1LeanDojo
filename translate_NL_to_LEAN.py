@@ -75,7 +75,7 @@ class Lean4Verification:
         elif example['type'] == 2:
             #print(">> Comparing: ")
             prompt = f"[UNUSED_TOKEN_146]user\nGiven a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
-            prompt = f"user\nGiven a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}\nassistant\n"
+            prompt = f"Given a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}"
             
             return prompt
         elif example['type'] == 3:
