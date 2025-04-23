@@ -75,17 +75,6 @@ class Lean4Verification:
         elif example['type'] == 2:
             #print(">> Comparing: ")
             prompt = f"[UNUSED_TOKEN_146]user\nGiven a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
-            print(prompt)
-            if "Answer 1 is better" in prompt and "Answer 2 is better" in prompt:
-                return 0.5
-            elif "Answer 1 is better" in prompt:
-                return 0
-            elif "Answer 2 is better" in prompt:
-                return 1
-            elif "equal" in prompt:
-                return 0.5
-            else:
-                raise Exception("Neither answer one nor answer 2 is better.")
             return prompt
         elif example['type'] == 3:
             #print(">> Comparing: ")
@@ -101,7 +90,17 @@ class Lean4Verification:
 
     def compare(self, problem, cot1, cot2):
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
-        return self.run_model(question)
+        answer = self.run_model(question)
+        if "Answer 1 is better" in answer and "Answer 2 is better" in answer:
+            return 0.5
+        elif "Answer 1 is better" in answer:
+            return 0
+        elif "Answer 2 is better" in answer:
+            return 1
+        elif "equal" in answer:
+            return 0.5
+        else:
+            raise Exception("Neither answer one nor answer 2 is better.")
 
 
 # Beispielnutzung
