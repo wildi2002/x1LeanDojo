@@ -8,8 +8,8 @@ from transformers import AutoTokenizer
 class Lean4Verification:
     def __init__(
         self,
-        model_path="internlm/internlm2-math-base-7b",
-        model_id="internlm/internlm2-math-base-7b",
+        model_path="deepseek-ai/DeepSeek-Prover-V1.5-RL"#"internlm/internlm2-math-base-7b",
+        model_id="deepseek-ai/DeepSeek-Prover-V1.5-RL"#"internlm/internlm2-math-base-7b",
         max_new_token=1000,
         temperature=0.01,
         tp_size=1,
