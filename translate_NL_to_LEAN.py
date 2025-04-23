@@ -9,8 +9,8 @@ class Lean4Verification:
     def __init__(
         self,
         #model_path="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
-        #model_path="internlm/internlm2-math-base-7b",
-        model_path="internlm/internlm2-math-plus-20b",
+        model_path="internlm/internlm2-math-base-7b",
+        #model_path="internlm/internlm2-math-plus-20b",
         max_new_token=10000,
         temperature=0.01,
         tp_size=1,
@@ -75,15 +75,17 @@ class Lean4Verification:
         elif example['type'] == 2:
             #print(">> Comparing: ")
             prompt = f"[UNUSED_TOKEN_146]user\nGiven a question and two answers, which one is better? \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
-            #print(prompt)
-            # if "Answer 1 is better" in prompt:
-            #     return 1
-            # elif "Answer 2 is better" in prompt:
-            #     return 2
-            # elif "Answer 2 is better" in prompt:
-            #     return 0
-            # else:
-            #     raise Exception("Neither answer one nor answer 2 is better.")
+            print(prompt)
+            if "Answer 1 is better" in prompt and "Answer 2 is better" in prompt:
+                return 0.5
+            elif "Answer 1 is better" in prompt:
+                return 0
+            elif "Answer 2 is better" in prompt:
+                return 1
+            elif "equal" in prompt:
+                return 0.5
+            else:
+                raise Exception("Neither answer one nor answer 2 is better.")
             return prompt
         elif example['type'] == 3:
             #print(">> Comparing: ")
@@ -98,7 +100,7 @@ class Lean4Verification:
         return self.run_model(question)
 
     def compare(self, problem, cot1, cot2):
-        question = {"type": 3, "problem": problem, "cot1": cot1, "cot2": cot2}
+        question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
         return self.run_model(question)
 
 
