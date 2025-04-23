@@ -91,6 +91,7 @@ class Lean4Verification:
     def compare(self, problem, cot1, cot2):
         question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
         answer = self.run_model(question)
+        print(answer)
         if "Answer 1 is better" in answer and "Answer 2 is better" in answer:
             return 0.5
         elif "Answer 1 is better" in answer:
