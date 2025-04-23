@@ -12,7 +12,7 @@ class Lean4Verification:
         model_path="internlm/internlm2-math-base-7b",
         #model_path="internlm/internlm2-math-plus-20b",
         max_new_token=100,
-        temperature=0.01,
+        temperature=0.6,
         tp_size=1,
     ):
         model_id = model_path
