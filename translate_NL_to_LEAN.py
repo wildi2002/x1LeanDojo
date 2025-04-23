@@ -10,7 +10,7 @@ class Lean4Verification:
         self,
         model_path="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
         model_id="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
-        max_new_token=1000,
+        max_new_token=10000,
         temperature=0.01,
         tp_size=1,
     ):
@@ -85,7 +85,7 @@ class Lean4Verification:
             return prompt
         elif example['type'] == 3:
             #print(">> Comparing: ")
-            prompt = f"Given a question and two answers, return a number between 0 and 1: 0 means Answer 1 is fully correct, 1 means Answer 2 is fully correct. \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
+            prompt = f"Given a question and two answers, return a number between 0 and 1: 0 means Answer 1 is fully correct, 1 means Answer 2 is fully correct. Without explanation. \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
 
             return prompt
         else:
