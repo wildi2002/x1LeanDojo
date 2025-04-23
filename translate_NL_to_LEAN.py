@@ -9,13 +9,13 @@ class Lean4Verification:
     def __init__(
         self,
         #model_path="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
-        #model_id="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
-        model_path="internlm/internlm2-math-base-7b",
-        model_id="internlm/internlm2-math-base-7b",
+        #model_path="internlm/internlm2-math-base-7b",
+        model_path="internlm/internlm2_5-step-prover-critic",
         max_new_token=10000,
         temperature=0.01,
         tp_size=1,
     ):
+        model_id = model_path
         print('CUDA available:', torch.cuda.is_available())
         print("CUDA_VISIBLE_DEVICES:", os.environ.get("CUDA_VISIBLE_DEVICES", "N/A"))
 
