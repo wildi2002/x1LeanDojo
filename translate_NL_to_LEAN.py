@@ -80,7 +80,7 @@ class Lean4Verification:
             return prompt
         elif example['type'] == 3:
             #print(">> Comparing: ")
-            prompt = f"Given a question and two answers, return a number between 0 and 1: 0 means Answer 1 is fully correct, 1 means Answer 2 is fully correct. Without explanation. \nQuestion: {example['problem']}\nAnswer 1: {example['cot1']}\nAnswer 2: {example['cot2']}[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
+            prompt = f"Given a question and two answers, return a number between 0 and 1: 0 means Answer 1 is fully correct, 1 means Answer 2 is fully correct. Without explanation. \nQuestion: {example['problem']}"
 
             return prompt
         else:
@@ -90,20 +90,30 @@ class Lean4Verification:
         question = {"type": 1, "problem": problem}
         return self.run_model(question)
 
-    def compare(self, problem, cot1, cot2):
-        question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
-        answer = self.run_model(question)
-        print(answer)
-        if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
-            return 0.5
-        elif "equal" in answer:
-            return 0.5
-        elif "Answer 1 is better" in answer or "Answer 1 is correct" in answer:
-            return 0
-        elif "Answer 2 is better" in answer or "Answer 2 is correct" in answer:
-            return 1
+    def compare(self, problem, cot1, cot2, use_float=True):
+        if use_float:
+            question = {"type": 3, "problem": problem, "cot1": cot1, "cot2": cot2}
+            answer = self.run_model(question)
+            print(f"Model output: {answer}")
+            try:
+                score = float(answer.strip())
+                return max(0.0, min(1.0, score))  # Clamping just in case
+            except ValueError:
+                raise Exception(f"Invalid floating point output: {answer}")
         else:
-            raise Exception("Neither answer one nor answer 2 is better.")
+            question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
+            answer = self.run_model(question)
+            print(f"Model output: {answer}")
+            if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
+                return 0.5
+            elif "equal" in answer:
+                return 0.5
+            elif "Answer 1 is better" in answer or "Answer 1 is correct" in answer:
+                return 0
+            elif "Answer 2 is better" in answer or "Answer 2 is correct" in answer:
+                return 1
+            else:
+                raise Exception("Neither answer one nor answer 2 is better.")
 
 
 # Beispielnutzung
