@@ -95,11 +95,12 @@ class Lean4Verification:
             question = {"type": 3, "problem": problem, "cot1": cot1, "cot2": cot2}
             answer = self.run_model(question)
             print(f"Model output: {answer}")
-            try:
-                score = float(answer.strip())
-                return max(0.0, min(1.0, score))  # Clamping just in case
-            except ValueError:
-                raise Exception(f"Invalid floating point output: {answer}")
+            return answer
+            # try:
+            #     score = float(answer.strip())
+            #     return max(0.0, min(1.0, score))  # Clamping just in case
+            # except ValueError:
+            #     raise Exception(f"Invalid floating point output: {answer}")
         else:
             question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
             answer = self.run_model(question)
