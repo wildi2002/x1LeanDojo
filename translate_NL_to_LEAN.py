@@ -36,9 +36,9 @@ class Lean4Verification:
 
         # Load model
         try:
-            self.model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16", quantization=None)
+            self.model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
         except RecursionError:
-            self.model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16", quantization=None)
+            self.model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
 
         self.sampling_params = SamplingParams(
             temperature=self.temperature,
