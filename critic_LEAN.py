@@ -12,7 +12,10 @@ class Lean4Verification:
         self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm2_5-step-prover-critic", trust_remote_code=True)
 
     def get_chat(self, problem, cot):
-        return [{f"role": "user", "content": "{problem}"}, {"role": "assistant", "content": "{cot}"}]
+        return [
+            {"role": "user", "content": f"{problem}"},
+            {"role": "assistant", "content": f"{cot}"}
+        ]
     
     def compare(self, problem, cot1, cot2):
         print(self.get_chat(problem, cot1))
