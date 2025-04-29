@@ -18,7 +18,6 @@ class Lean4Verification:
         ]
     
     def compare(self, problem, cot1, cot2):
-        print(self.get_chat(problem, cot1))
         return f"Score 1: \t {self.model.get_score(self.tokenizer, self.get_chat(problem, cot1))} \t\t Score 2: \t {self.model.get_score(self.tokenizer, self.get_chat(problem, cot2))}"
 
 
