@@ -90,7 +90,7 @@ class Lean4Verification:
         question = {"type": 1, "problem": problem}
         return self.run_model(question)
 
-    def compare(self, problem, cot1, cot2, use_float=True):
+    def compare(self, problem, cot1, cot2, use_float=False):
         if use_float:
             question = {"type": 3, "problem": problem, "cot1": cot1, "cot2": cot2}
             answer = self.run_model(question)
@@ -105,16 +105,17 @@ class Lean4Verification:
             question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
             answer = self.run_model(question)
             print(f"Model output: {answer}")
-            if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
-                return 0.5
-            elif "equal" in answer:
-                return 0.5
-            elif "Answer 1 is better" in answer or "Answer 1 is correct" in answer:
-                return 0
-            elif "Answer 2 is better" in answer or "Answer 2 is correct" in answer:
-                return 1
-            else:
-                raise Exception("Neither answer one nor answer 2 is better.")
+            return answer
+            # if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
+            #     return 0.5
+            # elif "equal" in answer:
+            #     return 0.5
+            # elif "Answer 1 is better" in answer or "Answer 1 is correct" in answer:
+            #     return 0
+            # elif "Answer 2 is better" in answer or "Answer 2 is correct" in answer:
+            #     return 1
+            # else:
+            #     raise Exception("Neither answer one nor answer 2 is better.")
 
 
 # Beispielnutzung
