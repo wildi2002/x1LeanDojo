@@ -15,6 +15,7 @@ class Lean4Verification:
         return [{f"role": "user", "content": "{problem}"}, {"role": "assistant", "content": "{cot}"}]
     
     def compare(self, problem, cot1, cot2):
+        print(self.tokenizer, self.get_chat(problem, cot1))
         return f"Score 1: \t {self.model.get_score(self.tokenizer, self.get_chat(problem, cot1))} \t\t Score 2: \t {self.model.get_score(self.tokenizer, self.get_chat(problem, cot2))}"
 
 
