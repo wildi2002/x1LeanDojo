@@ -1,7 +1,7 @@
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-class Lean4Verification:
+class Lean4Critic:
     def __init__(self):
         self.model = AutoModel.from_pretrained(
             "internlm/internlm2_5-step-prover-critic", 
@@ -18,11 +18,14 @@ class Lean4Verification:
         ]
     
     def compare(self, problem, cot1, cot2):
-        return f"Score 1: \t {self.model.get_score(self.tokenizer, self.get_chat(problem, cot1))} \t\t Score 2: \t {self.model.get_score(self.tokenizer, self.get_chat(problem, cot2))}"
+        score1 = self.model.get_score(self.tokenizer, self.get_chat(problem, cot1))
+        score2 = self.model.get_score(self.tokenizer, self.get_chat(problem, cot2))
+        #return f"Score 1: \t {score1} \t\t Score 2: \t {score2}"
+        return (score1, score2)
 
 
 if __name__ == "__main__":
-    lean = Lean4Verification()
+    lean = Lean4Critic()
 
     problem = "Show that the sum of two even numbers is always even."
     print(lean.compare(problem, ("""An even number can be written as 2 times a natural number. Let a = 2n and b = 2m for some natural numbers n and m. Then a + b = 2n + 2m. Factor the expression: 2n + 2m = 2(n + m). Since n + m is a natural number, a + b is divisible by 2, hence even."""), 
