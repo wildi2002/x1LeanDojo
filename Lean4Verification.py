@@ -2,7 +2,7 @@ import os
 import json
 import torch
 from vllm import LLM, SamplingParams
-from transformers import AutoTokenizer
+from transformers import AutoModel, AutoTokenizer
 
 
 class Lean4Verification:
@@ -36,11 +36,17 @@ class Lean4Verification:
         #     self.tokenizer.add_special_tokens(special_tokens_dict)
 
         # Load model
-        try:
-            self.model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
-        except RecursionError:
-            self.model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
+        # try:
+        #     self.model = LLM(model=model_path, tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
+        # except RecursionError:
+        #     self.model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
 
+        self.model = AutoModel.from_pretrained(
+            "internlm/internlm2_5-step-prover-critic", 
+            device_map="cuda", 
+            torch_dtype=torch.float16, 
+            trust_remote_code=True,
+        )
         self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm2_5-step-prover-critic", trust_remote_code=True)
 
         self.sampling_params = SamplingParams(
@@ -100,7 +106,7 @@ class Lean4Verification:
     
     def score(self, problem, cot):
         question = {"type": 4, "problem": problem, "cot": cot}
-        return self.get_score(self.tokenizer, question)
+        return self.model.get_score(self.tokenizer, question)
 
     def compare(self, problem, cot1, cot2, use_float=False):
         if use_float:
