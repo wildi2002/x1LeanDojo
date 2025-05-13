@@ -41,6 +41,8 @@ class Lean4Verification:
         except RecursionError:
             self.model = LLM(model=model_path, tokenizer_mode='slow', tensor_parallel_size=tp_size, trust_remote_code=True, dtype="bfloat16")
 
+        self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm2_5-step-prover-critic", trust_remote_code=True)
+
         self.sampling_params = SamplingParams(
             temperature=self.temperature,
             max_tokens=self.max_new_token,
@@ -98,7 +100,7 @@ class Lean4Verification:
     
     def score(self, problem, cot):
         question = {"type": 4, "problem": problem, "cot": cot}
-        return self.run_model(question)
+        return self.get_score(self.tokenizer, question)
 
     def compare(self, problem, cot1, cot2, use_float=False):
         if use_float:
