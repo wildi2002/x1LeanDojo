@@ -96,7 +96,7 @@ class Lean4Verification:
             #print(">> Comparing: ")
             prompt = [
                 {"role": "user", "content": "Which state is closer to 'no goals'?"},
-                {"role": "assistant", "content": f"Question: {example['problem']} \Answer: {example['cot']}"}
+                {"role": "assistant", "content": f"Question: {example['problem']} \nAnswer: {example['cot']}"}
             ]
             return prompt
         else:
