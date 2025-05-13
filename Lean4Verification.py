@@ -98,6 +98,7 @@ class Lean4Verification:
                 {"role": "user", "content": "Which state is closer to 'no goals'?"},
                 {"role": "assistant", "content": f"Question: {example['problem']} \nAnswer: {example['cot']}"}
             ]
+            print(prompt)
             return prompt
         else:
             raise Exception("not valid prompt type")
