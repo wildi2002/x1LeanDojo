@@ -113,8 +113,7 @@ class Lean4Verification:
         else:
             # question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
             # answer = self.run_model(question)
-            print(f"Model output: Score 1={self.score(problem, cot1)} Score 2={self.score(problem, cot2)}")
-            return answer
+            return f"Model output: Score 1={self.score(problem, cot1)} Score 2={self.score(problem, cot2)}"
             # if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
             #     return 0.5
             # elif "equal" in answer:
