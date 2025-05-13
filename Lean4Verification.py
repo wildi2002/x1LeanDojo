@@ -109,7 +109,7 @@ class Lean4Verification:
     
     def score(self, problem, cot):
         question = {"type": 4, "problem": problem, "cot": cot}
-        return self.model.get_score(self.tokenizer, question)
+        return self.model.get_score(self.tokenizer, self.get_prompt(question))
 
     def compare(self, problem, cot1, cot2, use_float=False):
         if use_float:
