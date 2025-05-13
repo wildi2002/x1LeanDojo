@@ -8,8 +8,8 @@ from transformers import AutoTokenizer
 class Lean4Verification:
     def __init__(
         self,
-        #model_path="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
-        model_path="internlm/internlm2-math-base-7b",
+        model_path="deepseek-ai/DeepSeek-Prover-V1.5-RL",#"internlm/internlm2-math-base-7b",
+        #model_path="internlm/internlm2-math-base-7b",
         #model_path="internlm/internlm2-math-plus-20b",
         max_new_token=100,
         temperature=0.6,
@@ -25,14 +25,14 @@ class Lean4Verification:
         self.temperature = temperature
 
         # Setup tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
-        special_tokens_dict = {}
-        if self.tokenizer.pad_token is None: special_tokens_dict["pad_token"] = '<unk>'
-        if self.tokenizer.eos_token is None: special_tokens_dict["eos_token"] = '</s>'
-        if self.tokenizer.bos_token is None: special_tokens_dict["bos_token"] = '<s>'
-        if self.tokenizer.unk_token is None: special_tokens_dict["unk_token"] = '<unk>'
-        if special_tokens_dict and 'Qwen' not in model_path:
-            self.tokenizer.add_special_tokens(special_tokens_dict)
+        # self.tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
+        # special_tokens_dict = {}
+        # if self.tokenizer.pad_token is None: special_tokens_dict["pad_token"] = '<unk>'
+        # if self.tokenizer.eos_token is None: special_tokens_dict["eos_token"] = '</s>'
+        # if self.tokenizer.bos_token is None: special_tokens_dict["bos_token"] = '<s>'
+        # if self.tokenizer.unk_token is None: special_tokens_dict["unk_token"] = '<unk>'
+        # if special_tokens_dict and 'Qwen' not in model_path:
+        #     self.tokenizer.add_special_tokens(special_tokens_dict)
 
         # Load model
         try:
@@ -83,11 +83,20 @@ class Lean4Verification:
             prompt = f"Given a question and two answers, return a number between 0 and 1: 0 means Answer 1 is fully correct, 1 means Answer 2 is fully correct. Without explanation. \nQuestion: {example['problem']}"
 
             return prompt
+        elif example['type'] == 4:
+            #print(">> Comparing: ")
+            prompt = f"Given a question and and a COT, return a score, how good the answer is. \nQuestion: {example['problem']} \nCOT: {example['cot']}"
+
+            return prompt
         else:
             raise Exception("not valid prompt type")
     
     def translate(self, problem):
         question = {"type": 1, "problem": problem}
+        return self.run_model(question)
+    
+    def score(self, problem, cot):
+        question = {"type": 4, "problem": problem, "cot": cot}
         return self.run_model(question)
 
     def compare(self, problem, cot1, cot2, use_float=False):
@@ -102,9 +111,9 @@ class Lean4Verification:
             # except ValueError:
             #     raise Exception(f"Invalid floating point output: {answer}")
         else:
-            question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
-            answer = self.run_model(question)
-            print(f"Model output: {answer}")
+            # question = {"type": 2, "problem": problem, "cot1": cot1, "cot2": cot2}
+            # answer = self.run_model(question)
+            print(f"Model output: Score 1={self.score(problem, cot1)} Score 2={self.score(problem, cot2)}")
             return answer
             # if ("Answer 1 is better" in answer and "Answer 2 is better" in answer) or ("Answer 1 is correct" in answer and "Answer 2 is correct" in answer):
             #     return 0.5
