@@ -94,8 +94,10 @@ class Lean4Verification:
             return prompt
         elif example['type'] == 4:
             #print(">> Comparing: ")
-            prompt = f"Given a question and and a COT, return a score, how good the answer is. \nQuestion: {example['problem']} \nCOT: {example['cot']}"
-
+            prompt = [
+                {"role": "user", "content": "Which state is closer to 'no goals'?"},
+                {"role": "assistant", "content": f"Question: {example['problem']} \Answer: {example['cot']}"}
+            ]
             return prompt
         else:
             raise Exception("not valid prompt type")
